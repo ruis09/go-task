@@ -24,7 +24,7 @@ func main() {
 
 	routes.Register(g, db, serviceCron)
 
-	//_ = g.Run("127.0.0.1:8888")
+	_ = g.Run("127.0.0.1:8888")
 
 	////初始化定时任务
 	//service.Initialize()

@@ -97,6 +97,8 @@ func (t *TaskServiceImpl) CreateJob(task model.Task) cron.FuncJob {
 		taskCount.Add()
 		defer taskCount.Done()
 
+		//TODO 开始执行之前记录日志
+
 		concurrencyQueue.Add()
 		defer concurrencyQueue.Done()
 
@@ -132,6 +134,9 @@ func (t *TaskServiceImpl) CreateJob(task model.Task) cron.FuncJob {
 			}
 
 		}(task)
+
+		//TODO 执行完记录日志
+
 	}
 }
 
