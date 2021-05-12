@@ -9,13 +9,14 @@ import (
 
 func Register(g *gin.Engine, db *gorm.DB, cron *cron.Cron) *gin.Engine {
 	// V1 API
-	v1 := g.Group("/api/v1")
+	v1 := g.Group("/api/v1/task")
 	{
 		task := initTaskHandler(db, cron)
 		{
-			v1.POST("/start", task.Start)
-			v1.POST("/stop", task.Stop)
-			v1.POST("/remove", task.Remove)
+			v1.POST("/start/:task_id", task.Start)   //启动任务
+			v1.POST("/run/:task_id", task.Run)       //运行一次
+			v1.POST("/stop/:task_id", task.Stop)     //停止一次任务
+			v1.POST("/remove/:task_id", task.Remove) //移除任务
 		}
 	}
 

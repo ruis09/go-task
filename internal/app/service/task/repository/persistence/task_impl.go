@@ -15,7 +15,7 @@ func (t *TaskRepoImpl) GetTaskList() ([]model.Task, error) {
 	return lists, err
 }
 
-func (t *TaskRepoImpl) GetTaskById(id string) (*model.Task, error) {
+func (t *TaskRepoImpl) GetTaskById(id int) (*model.Task, error) {
 	var task model.Task
 	var err error
 

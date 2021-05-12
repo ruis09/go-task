@@ -6,11 +6,19 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/ruis09/go-task/internal/app/service/task/service/impl"
 	"github.com/ruis09/go-task/routes"
+	"github.com/ruis09/go-task/task"
 	"github.com/ruis09/go-task/tool"
 )
 
 var db *gorm.DB
 var serviceCron *cron.Cron
+
+type Exec struct {
+}
+
+func (e *Exec) run() {
+	println("exec")
+}
 
 func main() {
 	g := gin.New()
@@ -20,7 +28,14 @@ func main() {
 	serviceCron = cron.New()
 	serviceCron.Start()
 
+	//初始化任务方法
+	task.InitTaskMap()
+
+	//启动任务
 	impl.NewTaskService(db, serviceCron).InitTask()
+
+	_, _ = task.Call("task1")
+	_, _ = task.Call("task2")
 
 	routes.Register(g, db, serviceCron)
 

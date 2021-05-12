@@ -8,9 +8,10 @@ import (
 )
 
 type TaskApp interface {
-	Run(id string)
-	Stop(id string)
-	Remove(id string)
+	Start(id int)
+	Run(id int)
+	Stop(id int)
+	Remove(id int)
 }
 
 // TaskAppImpl
@@ -25,17 +26,23 @@ func NewTaskApp(db *gorm.DB, cron *cron.Cron) *TaskAppImpl {
 	}
 }
 
-func (t *TaskAppImpl) Run(id string) {
+func (t *TaskAppImpl) Start(id int) {
+	task, _ := t.taskSrv.GetTaskById(id)
+	go t.taskSrv.Add(*task)
+}
+
+func (t *TaskAppImpl) Run(id int) {
 	task, _ := t.taskSrv.GetTaskById(id)
 	go t.taskSrv.CreateJob(*task)()
 }
 
-func (t *TaskAppImpl) Stop(id string) {
+func (t *TaskAppImpl) Stop(id int) {
 	task, _ := t.taskSrv.GetTaskById(id)
 	t.taskSrv.Stop(*task)
+	t.taskSrv.Remove(*task)
 }
 
-func (t *TaskAppImpl) Remove(id string) {
+func (t *TaskAppImpl) Remove(id int) {
 	task, _ := t.taskSrv.GetTaskById(id)
 	t.taskSrv.Remove(*task)
 }

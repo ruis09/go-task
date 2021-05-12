@@ -80,12 +80,9 @@ func (t *TaskServiceImpl) InitTask() {
 	taskCount = TaskCount{sync.WaitGroup{}, make(chan struct{})}
 	go taskCount.Wait()
 
-	lists, _ := t.taskRepo.GetTaskList()
+	tasks, _ := t.taskRepo.GetTaskList()
 
-	for _, task := range lists {
-		taskFunc := t.CreateJob(task)
-		t.cron.AddFunc(task.Cron, taskFunc, task.Name)
-	}
+	t.BatchAdd(tasks)
 }
 
 type Result struct {
@@ -141,11 +138,13 @@ func (t *TaskServiceImpl) CreateJob(task model.Task) cron.FuncJob {
 }
 
 func (t *TaskServiceImpl) Stop(task model.Task) {
+
 	//先stop
 	cancel, ok := taskMap.Load(task.Name)
 	if !ok {
 		return
 	}
+
 	cancel.(context.CancelFunc)()
 
 	//最后remove
@@ -156,6 +155,18 @@ func (t *TaskServiceImpl) Remove(task model.Task) {
 	t.cron.RemoveJob(task.Name)
 }
 
-func (t *TaskServiceImpl) GetTaskById(id string) (*model.Task, error) {
+func (t *TaskServiceImpl) GetTaskById(id int) (*model.Task, error) {
 	return t.taskRepo.GetTaskById(id)
+}
+
+func (t *TaskServiceImpl) Add(task model.Task) {
+	t.Remove(task)
+	taskFunc := t.CreateJob(task)
+	t.cron.AddFunc(task.Cron, taskFunc, task.Name)
+}
+
+func (t *TaskServiceImpl) BatchAdd(tasks []model.Task) {
+	for _, task := range tasks {
+		t.Add(task)
+	}
 }
