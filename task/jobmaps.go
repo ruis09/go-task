@@ -10,7 +10,17 @@ type stubMapping map[string]interface{}
 var StubStorage = stubMapping{}
 
 func Call(funcName string, params ...interface{}) (result interface{}, err error) {
-	f := reflect.ValueOf(StubStorage[funcName])
+	function, ok := StubStorage[funcName]
+	if !ok {
+		err = errors.New("Function Not Found.")
+		return
+	}
+	t := reflect.TypeOf(function)
+	if t.Kind() != reflect.Func {
+		err = errors.New("Not Function.")
+		return
+	}
+	f := reflect.ValueOf(function)
 	if len(params) != f.Type().NumIn() {
 		err = errors.New("The number of params is out of index.")
 		return

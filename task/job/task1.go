@@ -1,6 +1,6 @@
 package job
 
-func RunTaskOne(fd string) {
+func RunTaskOne() {
 	println("xixix")
 	return
 }

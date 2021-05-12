@@ -6,6 +6,7 @@ import (
 	"github.com/ruis09/go-task/internal/app/service/task/repository"
 	"github.com/ruis09/go-task/internal/app/service/task/repository/model"
 	"github.com/ruis09/go-task/internal/app/service/task/repository/persistence"
+	task2 "github.com/ruis09/go-task/task"
 	"golang.org/x/net/context"
 	"sync"
 	"time"
@@ -110,11 +111,10 @@ func (t *TaskServiceImpl) CreateJob(task model.Task) cron.FuncJob {
 			defer taskMap.Delete(t.Name)
 
 			println("正在执行：", t.Name)
-			//exec(ctx, t)
-			if t.Name == "任务2" {
-				time.Sleep(time.Second * 5)
-			}
 
+			if _, err := task2.Call(t.Name); err != nil {
+				println(err.Error())
+			}
 			resultChan := make(chan Result)
 
 			go func() {
